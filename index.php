@@ -1,0 +1,283 @@
+<?php
+require_once __DIR__ . '/data.php';
+
+$mensaje = '';
+$tipoMensaje = 'success';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $accion = $_POST['accion'] ?? '';
+
+    if ($accion === 'agregar') {
+        $id = (int)($_POST['producto_id'] ?? 0);
+
+        if (isset($productos[$id])) {
+            $disponible = stockDisponible($id, $productos);
+
+            if ($disponible > 0) {
+                $_SESSION['carrito'][$id] = ($_SESSION['carrito'][$id] ?? 0) + 1;
+                $mensaje = 'Producto agregado al carrito.';
+            } else {
+                $mensaje = 'Ese producto ya no tiene unidades disponibles.';
+                $tipoMensaje = 'error';
+            }
+        }
+    }
+
+    if ($accion === 'quitar') {
+        $id = (int)($_POST['producto_id'] ?? 0);
+
+        if (isset($_SESSION['carrito'][$id])) {
+            $_SESSION['carrito'][$id]--;
+
+            if ($_SESSION['carrito'][$id] <= 0) {
+                unset($_SESSION['carrito'][$id]);
+            }
+
+            $mensaje = 'Producto retirado del carrito.';
+        }
+    }
+
+    if ($accion === 'vaciar_carrito') {
+        $_SESSION['carrito'] = [];
+        $mensaje = 'Carrito vaciado correctamente.';
+    }
+}
+
+$resumen = carritoResumen($productos);
+?>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Baby Shower | Lista de Regalos</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        bbpink: '#F9DCE7',
+                        bbrose: '#F4BACB',
+                        bbblue: '#D9ECFF',
+                        bbsky: '#B8DDFB',
+                        bbcream: '#FFF8F4',
+                        bbmint: '#DDF4EC',
+                        bbtext: '#5F5A68',
+                        bbstrong: '#7A6170',
+                        bbviolet: '#A78BFA'
+                    },
+                    boxShadow: {
+                        soft: '0 12px 35px rgba(185, 166, 180, 0.16)',
+                        card: '0 18px 40px rgba(181, 200, 227, 0.18)'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body{
+            background:
+                radial-gradient(circle at top left, rgba(249,220,231,.70), transparent 28%),
+                radial-gradient(circle at top right, rgba(217,236,255,.75), transparent 28%),
+                linear-gradient(180deg, #fffafc 0%, #ffffff 45%, #fff7fb 100%);
+        }
+    </style>
+</head>
+<body class="text-bbtext min-h-screen">
+
+    <!-- TOP BAR / CARRITO -->
+    <header class="sticky top-0 z-50 backdrop-blur-xl bg-white/80 border-b border-white/60">
+        <div class="max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
+            <div class="flex items-center justify-between gap-4 py-4">
+                <div class="min-w-0">
+                    <div class="text-xs uppercase tracking-[.22em] text-bbstrong/70 font-bold">Baby Shower</div>
+                    <h1 class="text-lg md:text-2xl font-black text-bbstrong truncate">
+                        Lista de regalos del bebé
+                    </h1>
+                </div>
+
+                <div class="flex items-center gap-3 shrink-0">
+                    <div class="hidden md:flex items-center gap-3 rounded-full bg-white border border-bbpink/40 px-4 py-2 shadow-soft">
+                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-bbpink to-bbblue flex items-center justify-center text-bbstrong">
+                            🛒
+                        </div>
+                        <div class="leading-tight">
+                            <div class="text-xs text-bbtext/70 font-semibold">Carrito</div>
+                            <div class="text-sm font-bold text-bbstrong">
+                                <?php echo $resumen['items']; ?> producto(s) · S/ <?php echo number_format($resumen['total'], 2); ?>
+                            </div>
+                        </div>
+                    </div>
+
+                    <a href="checkout.php" class="rounded-full bg-bbstrong text-white px-5 py-3 font-semibold shadow-soft hover:opacity-90 transition">
+                        Ir al checkout
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="max-w-7xl mx-auto px-4 py-6 md:px-6 lg:px-8">
+
+        <!-- HERO -->
+        <section class="relative overflow-hidden rounded-[32px] bg-white/85 backdrop-blur-xl shadow-soft border border-white/70 p-6 md:p-10">
+            <div class="absolute -top-8 -left-8 w-36 h-36 rounded-full bg-bbpink/60 blur-3xl"></div>
+            <div class="absolute -bottom-8 -right-8 w-36 h-36 rounded-full bg-bbblue/70 blur-3xl"></div>
+
+            <div class="relative grid md:grid-cols-2 gap-8 items-center">
+                <div>
+                    <span class="inline-flex items-center rounded-full bg-bbblue px-4 py-1.5 text-sm font-semibold text-bbstrong">
+                        Regala con amor
+                    </span>
+
+                    <h2 class="mt-4 text-4xl md:text-5xl font-black tracking-tight text-bbstrong leading-tight">
+                        Elige un detalle especial para nuestro bebé
+                    </h2>
+
+                    <p class="mt-4 text-base md:text-lg leading-7 text-bbtext/90 max-w-xl">
+                        Agrega productos al carrito y continúa en una página aparte para completar
+                        el pago con <strong>Yape</strong> o <strong>Plin</strong>.
+                    </p>
+
+                    <div class="mt-6 flex flex-wrap gap-3">
+                        <a href="#productos" class="rounded-full bg-bbstrong text-white px-6 py-3 font-semibold shadow-soft">
+                            Ver regalos
+                        </a>
+                        <a href="checkout.php" class="rounded-full bg-white border border-bbrose px-6 py-3 font-semibold text-bbstrong">
+                            Ver carrito
+                        </a>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="rounded-[28px] bg-gradient-to-br from-bbpink via-white to-bbblue p-4 shadow-card">
+                        <img
+                            src="https://images.unsplash.com/photo-1516627145497-ae6968895b74?auto=format&fit=crop&w=1200&q=80"
+                            alt="Baby Shower"
+                            class="w-full h-[340px] object-cover rounded-[24px]"
+                        >
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <?php if ($mensaje !== ''): ?>
+            <div class="mt-5 rounded-2xl px-5 py-4 shadow-soft border <?php echo $tipoMensaje === 'success' ? 'bg-emerald-50 border-emerald-200 text-emerald-700' : 'bg-rose-50 border-rose-200 text-rose-700'; ?>">
+                <?php echo h($mensaje); ?>
+            </div>
+        <?php endif; ?>
+
+        <!-- RESUMEN MÓVIL -->
+        <section class="mt-6 md:hidden">
+            <div class="rounded-[24px] bg-white/90 border border-white shadow-soft p-5 flex items-center justify-between gap-3">
+                <div>
+                    <div class="text-xs uppercase tracking-[.18em] text-bbstrong/70 font-semibold">Carrito</div>
+                    <div class="mt-1 text-lg font-black text-bbstrong">
+                        <?php echo $resumen['items']; ?> producto(s)
+                    </div>
+                    <div class="text-sm text-bbtext/75">
+                        Total: S/ <?php echo number_format($resumen['total'], 2); ?>
+                    </div>
+                </div>
+                <a href="checkout.php" class="rounded-full bg-bbstrong text-white px-4 py-2.5 font-semibold">
+                    Ver
+                </a>
+            </div>
+        </section>
+
+        <!-- PRODUCTOS -->
+        <section id="productos" class="mt-10">
+            <div class="flex items-center justify-between gap-4 mb-5">
+                <div>
+                    <h2 class="text-2xl md:text-3xl font-black text-bbstrong">Lista de regalos</h2>
+                    <p class="text-bbtext/80 mt-1">Selecciona uno o varios productos para regalar.</p>
+                </div>
+            </div>
+
+            <div class="grid sm:grid-cols-2 xl:grid-cols-3 gap-6">
+                <?php foreach ($productos as $producto): ?>
+                    <?php
+                        $reservados = cantidadReservadaGlobal((int)$producto['id']);
+                        $enCarritoProducto = (int)($_SESSION['carrito'][$producto['id']] ?? 0);
+                        $disponible = max(0, (int)$producto['stock'] - $reservados - $enCarritoProducto);
+                        $agotado = $disponible <= 0;
+                    ?>
+                    <article class="rounded-[28px] bg-white/90 border border-white shadow-card overflow-hidden hover:-translate-y-1 transition">
+                        <div class="relative">
+                            <img src="<?php echo h($producto['imagen']); ?>" alt="<?php echo h($producto['nombre']); ?>" class="w-full h-64 object-cover">
+
+                            <div class="absolute top-4 left-4 flex gap-2 flex-wrap">
+                                <span class="rounded-full bg-white/90 backdrop-blur px-3 py-1 text-xs font-bold text-bbstrong">
+                                    <?php echo h($producto['categoria']); ?>
+                                </span>
+
+                                <?php if ($agotado): ?>
+                                    <span class="rounded-full bg-rose-100 px-3 py-1 text-xs font-bold text-rose-700">
+                                        Agotado
+                                    </span>
+                                <?php else: ?>
+                                    <span class="rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-700">
+                                        Disponible: <?php echo $disponible; ?>
+                                    </span>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+
+                        <div class="p-5">
+                            <div class="flex items-start justify-between gap-3">
+                                <h3 class="text-xl font-extrabold text-bbstrong leading-tight">
+                                    <?php echo h($producto['nombre']); ?>
+                                </h3>
+
+                                <div class="text-right shrink-0">
+                                    <div class="text-xs text-bbtext/70">Regalo</div>
+                                    <div class="text-xl font-black text-bbstrong">
+                                        S/ <?php echo number_format((float)$producto['precio'], 2); ?>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <p class="mt-3 text-sm leading-6 text-bbtext/85">
+                                <?php echo h($producto['descripcion']); ?>
+                            </p>
+
+                            <div class="mt-4 flex items-center justify-between gap-3">
+                                <div class="text-sm text-bbtext/70">
+                                    En carrito: <strong><?php echo $enCarritoProducto; ?></strong>
+                                </div>
+
+                                <div class="flex gap-2">
+                                    <?php if ($enCarritoProducto > 0): ?>
+                                        <form method="POST">
+                                            <input type="hidden" name="accion" value="quitar">
+                                            <input type="hidden" name="producto_id" value="<?php echo (int)$producto['id']; ?>">
+                                            <button type="submit" class="rounded-full bg-white border border-slate-200 px-4 py-2.5 font-semibold text-slate-700">
+                                                Quitar
+                                            </button>
+                                        </form>
+                                    <?php endif; ?>
+
+                                    <?php if (!$agotado): ?>
+                                        <form method="POST">
+                                            <input type="hidden" name="accion" value="agregar">
+                                            <input type="hidden" name="producto_id" value="<?php echo (int)$producto['id']; ?>">
+                                            <button type="submit" class="rounded-full bg-bbstrong text-white px-5 py-2.5 font-semibold hover:opacity-90 transition">
+                                                Agregar
+                                            </button>
+                                        </form>
+                                    <?php else: ?>
+                                        <button type="button" class="rounded-full bg-slate-200 text-slate-500 px-5 py-2.5 font-semibold cursor-not-allowed">
+                                            No disponible
+                                        </button>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                <?php endforeach; ?>
+            </div>
+        </section>
+    </div>
+</body>
+</html>
