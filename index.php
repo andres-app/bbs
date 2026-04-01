@@ -47,6 +47,7 @@ $resumen = carritoResumen($productos);
 ?>
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <title>Baby Shower | Lista de Regalos</title>
@@ -76,14 +77,15 @@ $resumen = carritoResumen($productos);
         }
     </script>
     <style>
-        body{
+        body {
             background:
-                radial-gradient(circle at top left, rgba(249,220,231,.70), transparent 28%),
-                radial-gradient(circle at top right, rgba(217,236,255,.75), transparent 28%),
+                radial-gradient(circle at top left, rgba(249, 220, 231, .70), transparent 28%),
+                radial-gradient(circle at top right, rgba(217, 236, 255, .75), transparent 28%),
                 linear-gradient(180deg, #fffafc 0%, #ffffff 45%, #fff7fb 100%);
         }
     </style>
 </head>
+
 <body class="text-bbtext min-h-screen">
 
     <!-- TOP BAR / CARRITO -->
@@ -97,22 +99,119 @@ $resumen = carritoResumen($productos);
                     </h1>
                 </div>
 
-                <div class="flex items-center gap-3 shrink-0">
-                    <div class="hidden md:flex items-center gap-3 rounded-full bg-white border border-bbpink/40 px-4 py-2 shadow-soft">
-                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-bbpink to-bbblue flex items-center justify-center text-bbstrong">
+                <div class="flex items-center gap-3 shrink-0 relative">
+                    <!-- MINI CART BUTTON -->
+                    <button
+                        type="button"
+                        id="miniCartToggle"
+                        class="relative flex items-center gap-3 rounded-full bg-white border border-bbpink/40 px-4 py-2 shadow-soft hover:shadow-md transition">
+                        <div class="relative w-10 h-10 rounded-full bg-gradient-to-br from-bbpink to-bbblue flex items-center justify-center text-bbstrong text-lg">
                             🛒
+                            <?php if ($resumen['items'] > 0): ?>
+                                <span class="absolute -top-1 -right-1 min-w-[22px] h-[22px] px-1 rounded-full bg-bbstrong text-white text-[11px] font-bold flex items-center justify-center">
+                                    <?php echo $resumen['items']; ?>
+                                </span>
+                            <?php endif; ?>
                         </div>
-                        <div class="leading-tight">
+
+                        <div class="hidden md:block leading-tight text-left">
                             <div class="text-xs text-bbtext/70 font-semibold">Carrito</div>
                             <div class="text-sm font-bold text-bbstrong">
-                                <?php echo $resumen['items']; ?> producto(s) · S/ <?php echo number_format($resumen['total'], 2); ?>
+                                S/ <?php echo number_format($resumen['total'], 2); ?>
                             </div>
                         </div>
-                    </div>
+                    </button>
 
                     <a href="checkout.php" class="rounded-full bg-bbstrong text-white px-5 py-3 font-semibold shadow-soft hover:opacity-90 transition">
                         Ir al checkout
                     </a>
+
+                    <!-- MINI CART DROPDOWN -->
+                    <div
+                        id="miniCartPanel"
+                        class="hidden absolute right-0 top-[calc(100%+14px)] w-[360px] max-w-[calc(100vw-2rem)] rounded-[28px] bg-white/95 backdrop-blur-xl border border-white shadow-[0_20px_60px_rgba(122,97,112,.18)] overflow-hidden">
+                        <div class="px-5 py-4 border-b border-rose-100/70 bg-gradient-to-r from-bbpink/25 to-bbblue/25">
+                            <div class="flex items-center justify-between gap-3">
+                                <div>
+                                    <div class="text-sm font-extrabold text-bbstrong">Tu carrito</div>
+                                    <div class="text-xs text-bbtext/70">
+                                        <?php echo $resumen['items']; ?> producto(s)
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-xs text-bbtext/70">Total</div>
+                                    <div class="text-lg font-black text-bbstrong">
+                                        S/ <?php echo number_format($resumen['total'], 2); ?>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="max-h-[360px] overflow-y-auto px-4 py-4 space-y-3">
+                            <?php if (empty($_SESSION['carrito'])): ?>
+                                <div class="rounded-[22px] border border-dashed border-bbrose bg-bbpink/15 p-6 text-center">
+                                    <div class="text-base font-bold text-bbstrong">Tu carrito está vacío</div>
+                                    <p class="mt-1 text-sm text-bbtext/75">
+                                        Agrega productos para verlos aquí.
+                                    </p>
+                                </div>
+                            <?php else: ?>
+                                <?php foreach ($_SESSION['carrito'] as $id => $cantidad): ?>
+                                    <?php if (isset($productos[$id])): ?>
+                                        <div class="rounded-[22px] bg-bbcream border border-bbpink/20 p-3 flex items-center gap-3">
+                                            <img
+                                                src="<?php echo h($productos[$id]['imagen']); ?>"
+                                                alt="<?php echo h($productos[$id]['nombre']); ?>"
+                                                class="w-16 h-16 rounded-2xl object-cover shrink-0">
+
+                                            <div class="min-w-0 flex-1">
+                                                <div class="text-sm font-extrabold text-bbstrong leading-tight truncate">
+                                                    <?php echo h($productos[$id]['nombre']); ?>
+                                                </div>
+                                                <div class="text-xs text-bbtext/70 mt-1">
+                                                    Cantidad: <strong><?php echo (int)$cantidad; ?></strong>
+                                                </div>
+                                                <div class="text-sm font-bold text-bbstrong mt-1">
+                                                    S/ <?php echo number_format((float)$productos[$id]['precio'] * (int)$cantidad, 2); ?>
+                                                </div>
+                                            </div>
+
+                                            <form method="POST" class="shrink-0">
+                                                <input type="hidden" name="accion" value="quitar">
+                                                <input type="hidden" name="producto_id" value="<?php echo (int)$id; ?>">
+                                                <button
+                                                    type="submit"
+                                                    class="w-9 h-9 rounded-full bg-white border border-slate-200 text-slate-600 font-bold hover:bg-slate-50 transition"
+                                                    title="Quitar">
+                                                    −
+                                                </button>
+                                            </form>
+                                        </div>
+                                    <?php endif; ?>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </div>
+
+                        <div class="px-4 pb-4 pt-2 border-t border-rose-100/70 bg-white">
+                            <div class="grid grid-cols-2 gap-3">
+                                <form method="POST">
+                                    <input type="hidden" name="accion" value="vaciar_carrito">
+                                    <button
+                                        type="submit"
+                                        class="w-full rounded-full border border-rose-200 bg-rose-50 text-rose-700 px-4 py-3 font-semibold"
+                                        <?php echo empty($_SESSION['carrito']) ? 'disabled' : ''; ?>>
+                                        Vaciar
+                                    </button>
+                                </form>
+
+                                <a
+                                    href="checkout.php"
+                                    class="w-full text-center rounded-full bg-bbstrong text-white px-4 py-3 font-semibold hover:opacity-90 transition">
+                                    Continuar
+                                </a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -155,8 +254,7 @@ $resumen = carritoResumen($productos);
                         <img
                             src="https://images.unsplash.com/photo-1516627145497-ae6968895b74?auto=format&fit=crop&w=1200&q=80"
                             alt="Baby Shower"
-                            class="w-full h-[340px] object-cover rounded-[24px]"
-                        >
+                            class="w-full h-[340px] object-cover rounded-[24px]">
                     </div>
                 </div>
             </div>
@@ -198,10 +296,10 @@ $resumen = carritoResumen($productos);
             <div class="grid sm:grid-cols-2 xl:grid-cols-3 gap-6">
                 <?php foreach ($productos as $producto): ?>
                     <?php
-                        $reservados = cantidadReservadaGlobal((int)$producto['id']);
-                        $enCarritoProducto = (int)($_SESSION['carrito'][$producto['id']] ?? 0);
-                        $disponible = max(0, (int)$producto['stock'] - $reservados - $enCarritoProducto);
-                        $agotado = $disponible <= 0;
+                    $reservados = cantidadReservadaGlobal((int)$producto['id']);
+                    $enCarritoProducto = (int)($_SESSION['carrito'][$producto['id']] ?? 0);
+                    $disponible = max(0, (int)$producto['stock'] - $reservados - $enCarritoProducto);
+                    $agotado = $disponible <= 0;
                     ?>
                     <article class="rounded-[28px] bg-white/90 border border-white shadow-card overflow-hidden hover:-translate-y-1 transition">
                         <div class="relative">
@@ -279,5 +377,34 @@ $resumen = carritoResumen($productos);
             </div>
         </section>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const toggle = document.getElementById('miniCartToggle');
+            const panel = document.getElementById('miniCartPanel');
+
+            if (!toggle || !panel) return;
+
+            toggle.addEventListener('click', function(e) {
+                e.stopPropagation();
+                panel.classList.toggle('hidden');
+            });
+
+            panel.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+
+            document.addEventListener('click', function() {
+                panel.classList.add('hidden');
+            });
+
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    panel.classList.add('hidden');
+                }
+            });
+        });
+    </script>
 </body>
+
 </html>
