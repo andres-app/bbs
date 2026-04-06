@@ -129,75 +129,102 @@ $resumen = carritoResumen($productos);
                     <!-- MINI CART DROPDOWN -->
                     <div
                         id="miniCartPanel"
-                        class="hidden absolute right-0 top-[calc(100%+14px)] w-[360px] max-w-[calc(100vw-2rem)] rounded-[28px] bg-white/95 backdrop-blur-xl border border-white shadow-[0_20px_60px_rgba(122,97,112,.18)] overflow-hidden">
-                        <div class="px-5 py-4 border-b border-rose-100/70 bg-gradient-to-r from-bbpink/25 to-bbblue/25">
-                            <div class="flex items-center justify-between gap-3">
+                        class="hidden absolute right-0 top-[calc(100%+14px)] w-[380px] max-w-[calc(100vw-2rem)]
+                        rounded-[32px] bg-white/95 backdrop-blur-xl border border-white
+                        shadow-[0_30px_80px_rgba(122,97,112,.25)]
+                        overflow-hidden origin-top-right scale-95 opacity-0 transition-all duration-200">
+
+                        <!-- HEADER PREMIUM -->
+                        <div class="px-6 py-5 bg-gradient-to-r from-bbpink/30 via-white to-bbblue/30 border-b border-white/60">
+                            <div class="flex items-center justify-between">
                                 <div>
-                                    <div class="text-sm font-extrabold text-bbstrong">Tu carrito</div>
-                                    <div class="text-xs text-bbtext/70">
-                                        <?php echo $resumen['items']; ?> producto(s)
+                                    <div class="text-xs uppercase tracking-[.2em] text-bbstrong/70 font-bold">
+                                        Tu selección
+                                    </div>
+                                    <div class="text-lg font-black text-bbstrong mt-1">
+                                        Carrito
                                     </div>
                                 </div>
+
                                 <div class="text-right">
-                                    <div class="text-xs text-bbtext/70">Total</div>
-                                    <div class="text-lg font-black text-bbstrong">
+                                    <div class="text-xs text-bbtext/60">Total</div>
+                                    <div class="text-2xl font-black text-bbstrong">
                                         S/ <?php echo number_format($resumen['total'], 2); ?>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="max-h-[360px] overflow-y-auto px-4 py-4 space-y-3">
+                        <!-- ITEMS -->
+                        <div class="max-h-[360px] overflow-y-auto px-5 py-4 space-y-3">
+
                             <?php if (empty($_SESSION['carrito'])): ?>
-                                <div class="rounded-[22px] border border-dashed border-bbrose bg-bbpink/15 p-6 text-center">
+                                <div class="rounded-[24px] border border-dashed border-bbrose bg-bbpink/15 p-6 text-center">
                                     <div class="text-base font-bold text-bbstrong">Tu carrito está vacío</div>
                                     <p class="mt-1 text-sm text-bbtext/75">
                                         Agrega productos para verlos aquí.
                                     </p>
                                 </div>
                             <?php else: ?>
+
                                 <?php foreach ($_SESSION['carrito'] as $id => $cantidad): ?>
                                     <?php if (isset($productos[$id])): ?>
-                                        <div class="rounded-[22px] bg-bbcream border border-bbpink/20 p-3 flex items-center gap-3">
+
+                                        <div class="group rounded-[22px] bg-bbcream border border-bbpink/20 p-3 flex items-center gap-3 hover:shadow-md transition">
+
                                             <img
                                                 src="<?php echo h($productos[$id]['imagen']); ?>"
-                                                alt="<?php echo h($productos[$id]['nombre']); ?>"
-                                                class="w-16 h-16 rounded-2xl object-cover shrink-0">
+                                                class="w-16 h-16 rounded-2xl object-cover">
 
-                                            <div class="min-w-0 flex-1">
-                                                <div class="text-sm font-extrabold text-bbstrong leading-tight truncate">
+                                            <div class="flex-1 min-w-0">
+                                                <div class="text-sm font-extrabold text-bbstrong truncate">
                                                     <?php echo h($productos[$id]['nombre']); ?>
                                                 </div>
+
                                                 <div class="text-xs text-bbtext/70 mt-1">
-                                                    Cantidad: <strong><?php echo (int)$cantidad; ?></strong>
+                                                    Cantidad: <?php echo (int)$cantidad; ?>
                                                 </div>
-                                                <div class="text-sm font-bold text-bbstrong mt-1">
+
+                                                <div class="text-sm font-black text-bbstrong mt-1">
                                                     S/ <?php echo number_format((float)$productos[$id]['precio'] * (int)$cantidad, 2); ?>
                                                 </div>
                                             </div>
 
-                                            <form method="POST" class="shrink-0">
+                                            <form method="POST">
                                                 <input type="hidden" name="accion" value="quitar">
                                                 <input type="hidden" name="producto_id" value="<?php echo (int)$id; ?>">
                                                 <button
-                                                    type="submit"
-                                                    class="w-9 h-9 rounded-full bg-white border border-slate-200 text-slate-600 font-bold hover:bg-slate-50 transition"
-                                                    title="Quitar">
+                                                    class="w-9 h-9 rounded-full bg-white border border-slate-200 text-slate-600 font-bold hover:bg-rose-50 hover:text-rose-600 transition">
                                                     −
                                                 </button>
                                             </form>
+
                                         </div>
+
                                     <?php endif; ?>
                                 <?php endforeach; ?>
+
                             <?php endif; ?>
+
                         </div>
 
-                        <div class="px-4 pb-4 pt-2 border-t border-rose-100/70 bg-white">
+                        <!-- FOOTER PREMIUM -->
+                        <div class="px-5 pb-5 pt-3 border-t border-white/70 bg-white">
+
+                            <!-- TOTAL GRANDE -->
+                            <div class="flex items-center justify-between mb-4">
+                                <span class="text-sm text-bbtext/70">Total regalo</span>
+                                <span class="text-2xl font-black text-bbstrong">
+                                    S/ <?php echo number_format($resumen['total'], 2); ?>
+                                </span>
+                            </div>
+
+                            <!-- BOTONES -->
                             <div class="grid grid-cols-2 gap-3">
+
                                 <form method="POST">
                                     <input type="hidden" name="accion" value="vaciar_carrito">
                                     <button
-                                        type="submit"
                                         class="w-full rounded-full border border-rose-200 bg-rose-50 text-rose-700 px-4 py-3 font-semibold"
                                         <?php echo empty($_SESSION['carrito']) ? 'disabled' : ''; ?>>
                                         Vaciar
@@ -206,9 +233,10 @@ $resumen = carritoResumen($productos);
 
                                 <a
                                     href="checkout.php"
-                                    class="w-full text-center rounded-full bg-bbstrong text-white px-4 py-3 font-semibold hover:opacity-90 transition">
-                                    Continuar
+                                    class="w-full text-center rounded-full bg-bbstrong text-white px-4 py-3 font-bold shadow-lg hover:scale-[1.02] transition">
+                                    Continuar →
                                 </a>
+
                             </div>
                         </div>
                     </div>
@@ -340,36 +368,59 @@ $resumen = carritoResumen($productos);
                                 <?php echo h($producto['descripcion']); ?>
                             </p>
 
-                            <div class="mt-4 flex items-center justify-between gap-3">
+                            <div class="mt-5 flex items-center justify-between gap-3">
                                 <div class="text-sm text-bbtext/70">
-                                    En carrito: <strong><?php echo $enCarritoProducto; ?></strong>
+                                    <?php if ($enCarritoProducto > 0): ?>
+                                        En carrito: <strong><?php echo $enCarritoProducto; ?></strong>
+                                    <?php else: ?>
+                                        Listo para regalar
+                                    <?php endif; ?>
                                 </div>
 
-                                <div class="flex gap-2">
-                                    <?php if ($enCarritoProducto > 0): ?>
-                                        <form method="POST">
-                                            <input type="hidden" name="accion" value="quitar">
-                                            <input type="hidden" name="producto_id" value="<?php echo (int)$producto['id']; ?>">
-                                            <button type="submit" class="rounded-full bg-white border border-slate-200 px-4 py-2.5 font-semibold text-slate-700">
-                                                Quitar
+                                <?php if ($agotado): ?>
+                                    <button
+                                        type="button"
+                                        class="rounded-full bg-slate-200 text-slate-500 px-5 py-2.5 font-semibold cursor-not-allowed">
+                                        No disponible
+                                    </button>
+                                <?php else: ?>
+                                    <div class="inline-flex items-center rounded-full border border-bbpink/40 bg-white shadow-soft overflow-hidden">
+                                        <?php if ($enCarritoProducto > 0): ?>
+                                            <form method="POST">
+                                                <input type="hidden" name="accion" value="quitar">
+                                                <input type="hidden" name="producto_id" value="<?php echo (int)$producto['id']; ?>">
+                                                <button
+                                                    type="submit"
+                                                    class="w-11 h-11 flex items-center justify-center text-lg font-bold text-bbstrong hover:bg-bbpink/20 transition"
+                                                    aria-label="Quitar uno">
+                                                    −
+                                                </button>
+                                            </form>
+                                        <?php else: ?>
+                                            <button
+                                                type="button"
+                                                class="w-11 h-11 flex items-center justify-center text-lg font-bold text-slate-300 cursor-default"
+                                                disabled>
+                                                −
                                             </button>
-                                        </form>
-                                    <?php endif; ?>
+                                        <?php endif; ?>
 
-                                    <?php if (!$agotado): ?>
+                                        <div class="min-w-[52px] h-11 flex items-center justify-center text-sm font-black text-bbstrong bg-gradient-to-r from-white to-bbcream px-2">
+                                            <?php echo (int)$enCarritoProducto; ?>
+                                        </div>
+
                                         <form method="POST">
                                             <input type="hidden" name="accion" value="agregar">
                                             <input type="hidden" name="producto_id" value="<?php echo (int)$producto['id']; ?>">
-                                            <button type="submit" class="rounded-full bg-bbstrong text-white px-5 py-2.5 font-semibold hover:opacity-90 transition">
-                                                Agregar
+                                            <button
+                                                type="submit"
+                                                class="w-11 h-11 flex items-center justify-center text-lg font-bold text-white bg-bbstrong hover:opacity-90 transition"
+                                                aria-label="Agregar uno">
+                                                +
                                             </button>
                                         </form>
-                                    <?php else: ?>
-                                        <button type="button" class="rounded-full bg-slate-200 text-slate-500 px-5 py-2.5 font-semibold cursor-not-allowed">
-                                            No disponible
-                                        </button>
-                                    <?php endif; ?>
-                                </div>
+                                    </div>
+                                <?php endif; ?>
                             </div>
                         </div>
                     </article>
@@ -378,33 +429,51 @@ $resumen = carritoResumen($productos);
         </section>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const toggle = document.getElementById('miniCartToggle');
-            const panel = document.getElementById('miniCartPanel');
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const toggle = document.getElementById('miniCartToggle');
+    const panel = document.getElementById('miniCartPanel');
 
-            if (!toggle || !panel) return;
+    if (!toggle || !panel) return;
 
-            toggle.addEventListener('click', function(e) {
-                e.stopPropagation();
-                panel.classList.toggle('hidden');
-            });
+    function openCart() {
+        panel.classList.remove('hidden');
+        setTimeout(() => {
+            panel.classList.remove('scale-95', 'opacity-0');
+            panel.classList.add('scale-100', 'opacity-100');
+        }, 10);
+    }
 
-            panel.addEventListener('click', function(e) {
-                e.stopPropagation();
-            });
+    function closeCart() {
+        panel.classList.remove('scale-100', 'opacity-100');
+        panel.classList.add('scale-95', 'opacity-0');
 
-            document.addEventListener('click', function() {
-                panel.classList.add('hidden');
-            });
+        setTimeout(() => {
+            panel.classList.add('hidden');
+        }, 200);
+    }
 
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape') {
-                    panel.classList.add('hidden');
-                }
-            });
-        });
-    </script>
+    toggle.addEventListener('click', function (e) {
+        e.stopPropagation();
+
+        if (panel.classList.contains('hidden')) {
+            openCart();
+        } else {
+            closeCart();
+        }
+    });
+
+    panel.addEventListener('click', function (e) {
+        e.stopPropagation();
+    });
+
+    document.addEventListener('click', closeCart);
+
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') closeCart();
+    });
+});
+</script>
 </body>
 
 </html>
