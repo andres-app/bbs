@@ -1,8 +1,10 @@
 <?php
 require_once __DIR__ . '/data.php';
 
-$mensaje = '';
-$tipoMensaje = 'success';
+$mensaje = $_SESSION['flash_mensaje'] ?? '';
+$tipoMensaje = $_SESSION['flash_tipo'] ?? 'success';
+
+unset($_SESSION['flash_mensaje'], $_SESSION['flash_tipo']);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $accion = $_POST['accion'] ?? '';
@@ -24,55 +26,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($accion === 'vaciar_carrito') {
         $_SESSION['carrito'] = [];
         $mensaje = 'Carrito vaciado correctamente.';
-    }
-
-    if ($accion === 'confirmar_regalo') {
-        $nombre = trim($_POST['nombre'] ?? '');
-        $telefono = trim($_POST['telefono'] ?? '');
-        $metodo_pago = trim($_POST['metodo_pago'] ?? '');
-        $comentario = trim($_POST['comentario'] ?? '');
-
-        if ($nombre === '' || $telefono === '' || $metodo_pago === '') {
-            $mensaje = 'Completa tu nombre, teléfono y método de pago.';
-            $tipoMensaje = 'error';
-        } elseif (empty($_SESSION['carrito'])) {
-            $mensaje = 'Tu carrito está vacío.';
-            $tipoMensaje = 'error';
-        } else {
-            $ok = true;
-
-            foreach ($_SESSION['carrito'] as $productoId => $cantidad) {
-                $stockBase = (int)($productos[$productoId]['stock'] ?? 0);
-                $reservados = cantidadReservadaGlobal((int)$productoId);
-                $disponibleReal = $stockBase - $reservados;
-
-                if ((int)$cantidad > $disponibleReal) {
-                    $ok = false;
-                    break;
-                }
-            }
-
-            if (!$ok) {
-                $mensaje = 'Uno de los productos ya no tiene stock suficiente.';
-                $tipoMensaje = 'error';
-            } else {
-                foreach ($_SESSION['carrito'] as $productoId => $cantidad) {
-                    $_SESSION['regalos_confirmados'][] = [
-                        'producto_id' => (int)$productoId,
-                        'cantidad' => (int)$cantidad,
-                        'nombre' => $nombre,
-                        'telefono' => $telefono,
-                        'metodo_pago' => $metodo_pago,
-                        'comentario' => $comentario,
-                        'fecha' => date('Y-m-d H:i:s')
-                    ];
-                }
-
-                $_SESSION['carrito'] = [];
-                $mensaje = 'Tu regalo fue confirmado correctamente. Muchas gracias.';
-                $tipoMensaje = 'success';
-            }
-        }
     }
 }
 

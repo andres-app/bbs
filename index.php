@@ -15,7 +15,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             if ($disponible > 0) {
                 $_SESSION['carrito'][$id] = ($_SESSION['carrito'][$id] ?? 0) + 1;
-                $mensaje = 'Producto agregado al carrito.';
+
+                $_SESSION['flash_mensaje'] = 'Regalo agregado correctamente.';
+                $_SESSION['flash_tipo'] = 'success';
+
+                header('Location: checkout.php');
+                exit;
             } else {
                 $mensaje = 'Ese producto ya no tiene unidades disponibles.';
                 $tipoMensaje = 'error';
@@ -174,7 +179,8 @@ $resumen = carritoResumen($productos);
 
                                             <img
                                                 src="<?php echo h($productos[$id]['imagen']); ?>"
-                                                class="w-16 h-16 rounded-2xl object-cover">
+                                                class="w-16 h-16 rounded-2xl object-cover"
+                                                alt="<?php echo h($productos[$id]['nombre']); ?>">
 
                                             <div class="flex-1 min-w-0">
                                                 <div class="text-sm font-extrabold text-bbstrong truncate">
@@ -190,14 +196,45 @@ $resumen = carritoResumen($productos);
                                                 </div>
                                             </div>
 
-                                            <form method="POST">
-                                                <input type="hidden" name="accion" value="quitar">
-                                                <input type="hidden" name="producto_id" value="<?php echo (int)$id; ?>">
-                                                <button
-                                                    class="w-9 h-9 rounded-full bg-white border border-slate-200 text-slate-600 font-bold hover:bg-rose-50 hover:text-rose-600 transition">
-                                                    −
-                                                </button>
-                                            </form>
+                                            <div class="inline-flex items-center rounded-full border border-bbpink/40 bg-white shadow-soft overflow-hidden shrink-0">
+                                                <form method="POST">
+                                                    <input type="hidden" name="accion" value="quitar">
+                                                    <input type="hidden" name="producto_id" value="<?php echo (int)$id; ?>">
+                                                    <button
+                                                        type="submit"
+                                                        class="w-9 h-9 flex items-center justify-center text-base font-bold text-bbstrong hover:bg-bbpink/20 transition"
+                                                        aria-label="Quitar uno">
+                                                        −
+                                                    </button>
+                                                </form>
+
+                                                <div class="min-w-[34px] h-9 flex items-center justify-center text-xs font-black text-bbstrong px-2">
+                                                    <?php echo (int)$cantidad; ?>
+                                                </div>
+
+                                                <?php
+                                                $disponibleMiniCart = stockDisponible((int)$id, $productos);
+                                                ?>
+                                                <?php if ($disponibleMiniCart > 0): ?>
+                                                    <form method="POST">
+                                                        <input type="hidden" name="accion" value="agregar">
+                                                        <input type="hidden" name="producto_id" value="<?php echo (int)$id; ?>">
+                                                        <button
+                                                            type="submit"
+                                                            class="w-9 h-9 flex items-center justify-center text-base font-bold text-white bg-bbstrong hover:opacity-90 transition"
+                                                            aria-label="Agregar uno">
+                                                            +
+                                                        </button>
+                                                    </form>
+                                                <?php else: ?>
+                                                    <button
+                                                        type="button"
+                                                        class="w-9 h-9 flex items-center justify-center text-base font-bold text-slate-300 bg-slate-100 cursor-not-allowed"
+                                                        disabled>
+                                                        +
+                                                    </button>
+                                                <?php endif; ?>
+                                            </div>
 
                                         </div>
 
@@ -371,7 +408,7 @@ $resumen = carritoResumen($productos);
                             <div class="mt-5 flex items-center justify-between gap-3">
                                 <div class="text-sm text-bbtext/70">
                                     <?php if ($enCarritoProducto > 0): ?>
-                                        En carrito: <strong><?php echo $enCarritoProducto; ?></strong>
+                                        Ya agregaste <strong><?php echo $enCarritoProducto; ?></strong>
                                     <?php else: ?>
                                         Listo para regalar
                                     <?php endif; ?>
@@ -384,42 +421,15 @@ $resumen = carritoResumen($productos);
                                         No disponible
                                     </button>
                                 <?php else: ?>
-                                    <div class="inline-flex items-center rounded-full border border-bbpink/40 bg-white shadow-soft overflow-hidden">
-                                        <?php if ($enCarritoProducto > 0): ?>
-                                            <form method="POST">
-                                                <input type="hidden" name="accion" value="quitar">
-                                                <input type="hidden" name="producto_id" value="<?php echo (int)$producto['id']; ?>">
-                                                <button
-                                                    type="submit"
-                                                    class="w-11 h-11 flex items-center justify-center text-lg font-bold text-bbstrong hover:bg-bbpink/20 transition"
-                                                    aria-label="Quitar uno">
-                                                    −
-                                                </button>
-                                            </form>
-                                        <?php else: ?>
-                                            <button
-                                                type="button"
-                                                class="w-11 h-11 flex items-center justify-center text-lg font-bold text-slate-300 cursor-default"
-                                                disabled>
-                                                −
-                                            </button>
-                                        <?php endif; ?>
-
-                                        <div class="min-w-[52px] h-11 flex items-center justify-center text-sm font-black text-bbstrong bg-gradient-to-r from-white to-bbcream px-2">
-                                            <?php echo (int)$enCarritoProducto; ?>
-                                        </div>
-
-                                        <form method="POST">
-                                            <input type="hidden" name="accion" value="agregar">
-                                            <input type="hidden" name="producto_id" value="<?php echo (int)$producto['id']; ?>">
-                                            <button
-                                                type="submit"
-                                                class="w-11 h-11 flex items-center justify-center text-lg font-bold text-white bg-bbstrong hover:opacity-90 transition"
-                                                aria-label="Agregar uno">
-                                                +
-                                            </button>
-                                        </form>
-                                    </div>
+                                    <form method="POST">
+                                        <input type="hidden" name="accion" value="agregar">
+                                        <input type="hidden" name="producto_id" value="<?php echo (int)$producto['id']; ?>">
+                                        <button
+                                            type="submit"
+                                            class="inline-flex items-center gap-2 rounded-full bg-bbstrong text-white px-5 py-2.5 font-semibold shadow-soft hover:opacity-90 transition">
+                                            <span><?php echo $enCarritoProducto > 0 ? 'Regalar otro' : 'Regalar'; ?></span>
+                                        </button>
+                                    </form>
                                 <?php endif; ?>
                             </div>
                         </div>
@@ -429,51 +439,51 @@ $resumen = carritoResumen($productos);
         </section>
     </div>
 
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    const toggle = document.getElementById('miniCartToggle');
-    const panel = document.getElementById('miniCartPanel');
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const toggle = document.getElementById('miniCartToggle');
+            const panel = document.getElementById('miniCartPanel');
 
-    if (!toggle || !panel) return;
+            if (!toggle || !panel) return;
 
-    function openCart() {
-        panel.classList.remove('hidden');
-        setTimeout(() => {
-            panel.classList.remove('scale-95', 'opacity-0');
-            panel.classList.add('scale-100', 'opacity-100');
-        }, 10);
-    }
+            function openCart() {
+                panel.classList.remove('hidden');
+                setTimeout(() => {
+                    panel.classList.remove('scale-95', 'opacity-0');
+                    panel.classList.add('scale-100', 'opacity-100');
+                }, 10);
+            }
 
-    function closeCart() {
-        panel.classList.remove('scale-100', 'opacity-100');
-        panel.classList.add('scale-95', 'opacity-0');
+            function closeCart() {
+                panel.classList.remove('scale-100', 'opacity-100');
+                panel.classList.add('scale-95', 'opacity-0');
 
-        setTimeout(() => {
-            panel.classList.add('hidden');
-        }, 200);
-    }
+                setTimeout(() => {
+                    panel.classList.add('hidden');
+                }, 200);
+            }
 
-    toggle.addEventListener('click', function (e) {
-        e.stopPropagation();
+            toggle.addEventListener('click', function(e) {
+                e.stopPropagation();
 
-        if (panel.classList.contains('hidden')) {
-            openCart();
-        } else {
-            closeCart();
-        }
-    });
+                if (panel.classList.contains('hidden')) {
+                    openCart();
+                } else {
+                    closeCart();
+                }
+            });
 
-    panel.addEventListener('click', function (e) {
-        e.stopPropagation();
-    });
+            panel.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
 
-    document.addEventListener('click', closeCart);
+            document.addEventListener('click', closeCart);
 
-    document.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape') closeCart();
-    });
-});
-</script>
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') closeCart();
+            });
+        });
+    </script>
 </body>
 
 </html>
