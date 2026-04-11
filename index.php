@@ -88,6 +88,20 @@ $resumen = carritoResumen($productos);
                 radial-gradient(circle at top right, rgba(217, 236, 255, .75), transparent 28%),
                 linear-gradient(180deg, #fffafc 0%, #ffffff 45%, #fff7fb 100%);
         }
+
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .line-clamp-3 {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
     </style>
 </head>
 
@@ -366,11 +380,16 @@ $resumen = carritoResumen($productos);
                     $disponible = max(0, (int)$producto['stock'] - $reservados - $enCarritoProducto);
                     $agotado = $disponible <= 0;
                     ?>
-                    <article class="rounded-[28px] bg-white/90 border border-white shadow-card overflow-hidden hover:-translate-y-1 transition">
+                    <article class="rounded-[28px] bg-white/90 border border-white shadow-card overflow-hidden hover:-translate-y-1 transition h-full flex flex-col">
                         <div class="relative">
-                            <img src="<?php echo h($producto['imagen']); ?>" alt="<?php echo h($producto['nombre']); ?>" class="w-full h-64 object-cover">
+                            <div class="w-full h-64 bg-white flex items-center justify-center px-6 pt-8 pb-4">
+                                <img
+                                    src="<?php echo h($producto['imagen']); ?>"
+                                    alt="<?php echo h($producto['nombre']); ?>"
+                                    class="max-w-full max-h-full object-contain object-center mx-auto">
+                            </div>
 
-                            <div class="absolute top-4 left-4 flex gap-2 flex-wrap">
+                            <div class="absolute top-4 left-4 flex gap-2 flex-wrap z-10">
                                 <span class="rounded-full bg-white/90 backdrop-blur px-3 py-1 text-xs font-bold text-bbstrong">
                                     <?php echo h($producto['categoria']); ?>
                                 </span>
@@ -387,25 +406,25 @@ $resumen = carritoResumen($productos);
                             </div>
                         </div>
 
-                        <div class="p-5">
+                        <div class="p-5 flex flex-col flex-1">
                             <div class="flex items-start justify-between gap-3">
-                                <h3 class="text-xl font-extrabold text-bbstrong leading-tight">
+                                <h3 class="text-xl font-extrabold text-bbstrong leading-tight line-clamp-2 min-h-[3.5rem]">
                                     <?php echo h($producto['nombre']); ?>
                                 </h3>
 
                                 <div class="text-right shrink-0">
                                     <div class="text-xs text-bbtext/70">Regalo</div>
-                                    <div class="text-xl font-black text-bbstrong">
+                                    <div class="text-xl font-black text-bbstrong whitespace-nowrap">
                                         S/ <?php echo number_format((float)$producto['precio'], 2); ?>
                                     </div>
                                 </div>
                             </div>
 
-                            <p class="mt-3 text-sm leading-6 text-bbtext/85">
+                            <p class="mt-3 text-sm leading-6 text-bbtext/85 line-clamp-3 min-h-[4.5rem]">
                                 <?php echo h($producto['descripcion']); ?>
                             </p>
 
-                            <div class="mt-5 flex items-center justify-between gap-3">
+                            <div class="mt-auto pt-5 flex items-center justify-between gap-3">
                                 <div class="text-sm text-bbtext/70">
                                     <?php if ($enCarritoProducto > 0): ?>
                                         Ya agregaste <strong><?php echo $enCarritoProducto; ?></strong>
@@ -417,16 +436,16 @@ $resumen = carritoResumen($productos);
                                 <?php if ($agotado): ?>
                                     <button
                                         type="button"
-                                        class="rounded-full bg-slate-200 text-slate-500 px-5 py-2.5 font-semibold cursor-not-allowed">
+                                        class="rounded-full bg-slate-200 text-slate-500 px-5 py-2.5 font-semibold cursor-not-allowed whitespace-nowrap">
                                         No disponible
                                     </button>
                                 <?php else: ?>
-                                    <form method="POST">
+                                    <form method="POST" class="shrink-0">
                                         <input type="hidden" name="accion" value="agregar">
                                         <input type="hidden" name="producto_id" value="<?php echo (int)$producto['id']; ?>">
                                         <button
                                             type="submit"
-                                            class="inline-flex items-center gap-2 rounded-full bg-bbstrong text-white px-5 py-2.5 font-semibold shadow-soft hover:opacity-90 transition">
+                                            class="inline-flex items-center gap-2 rounded-full bg-bbstrong text-white px-5 py-2.5 font-semibold shadow-soft hover:opacity-90 transition whitespace-nowrap">
                                             <span><?php echo $enCarritoProducto > 0 ? 'Regalar otro' : 'Regalar'; ?></span>
                                         </button>
                                     </form>

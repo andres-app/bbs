@@ -6,30 +6,30 @@ if (session_status() === PHP_SESSION_NONE) {
 $productos = [
     1 => [
         'id' => 1,
-        'nombre' => 'Pañalera Premium',
+        'nombre' => 'Set Natural 3.0 Triple Pack',
         'precio' => 189.90,
-        'imagen' => 'https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?auto=format&fit=crop&w=900&q=80',
-        'descripcion' => 'Bolso amplio, elegante y práctico para las salidas del bebé.',
-        'categoria' => 'Esenciales',
+        'imagen' => 'https://infanti.com.pe/cdn/shop/files/01451483827-1.webp?v=1771948944&width=1220',
+        'descripcion' => 'Set Natural 3.0 Philips Avent con 3 biberones diseñados para una alimentación más natural y cómoda.',
+        'categoria' => 'Biberones',
         'stock' => 1
     ],
     2 => [
         'id' => 2,
-        'nombre' => 'Set de Ropita Recién Nacido',
-        'precio' => 129.90,
-        'imagen' => 'https://images.unsplash.com/photo-1519689680058-324335c77eba?auto=format&fit=crop&w=900&q=80',
-        'descripcion' => 'Conjunto suave y delicado para los primeros días del bebé.',
-        'categoria' => 'Ropita',
-        'stock' => 2
+        'nombre' => 'Bolsas Preesterilizadas X25 P/Leche Materna 6Oz/18',
+        'precio' => 59.00,
+        'imagen' => 'https://infanti.com.pe/cdn/shop/files/01451460325-3.jpg?v=1739393891&width=610',
+        'descripcion' => 'Las bolsas de almacenamiento para leche materna Philips Avent le permiten almacenar su leche materna de forma segura y confiable.',
+        'categoria' => 'Accesorios de lactancia',
+        'stock' => 1
     ],
     3 => [
         'id' => 3,
-        'nombre' => 'Manta Antialérgica',
-        'precio' => 79.90,
-        'imagen' => 'https://images.unsplash.com/photo-1544126592-807ade215a0b?auto=format&fit=crop&w=900&q=80',
-        'descripcion' => 'Manta súper suave y abrigadora para el descanso del bebé.',
+        'nombre' => 'Calentador de Biberones Manual Avent',
+        'precio' => 329.00,
+        'imagen' => 'https://infanti.com.pe/cdn/shop/files/01451435507_1.jpg?v=1694572416&width=1220',
+        'descripcion' => '¡En 3 minutos caliente de forma delicada la leche o la comida de tu bebé!',
         'categoria' => 'Descanso',
-        'stock' => 3
+        'stock' => 1
     ],
     4 => [
         'id' => 4,
