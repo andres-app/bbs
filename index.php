@@ -425,13 +425,6 @@ $resumen = carritoResumen($productos);
                             </p>
 
                             <div class="mt-auto pt-5 flex items-center justify-between gap-3">
-                            <div class="text-sm text-bbtext/70">
-                                    <?php if ($enCarritoProducto > 0): ?>
-                                        Ya agregaste <strong><?php echo $enCarritoProducto; ?></strong>
-                                    <?php else: ?>
-                                        Listo para regalar
-                                    <?php endif; ?>
-                                </div>
                                 <div class="text-sm text-bbtext/70">
                                     <?php if ($enCarritoProducto > 0): ?>
                                         Ya agregaste <strong><?php echo $enCarritoProducto; ?></strong>
@@ -447,15 +440,15 @@ $resumen = carritoResumen($productos);
                                         No disponible
                                     </button>
                                 <?php else: ?>
-                                    <form method="POST" class="shrink-0">
-                                        <input type="hidden" name="accion" value="agregar">
-                                        <input type="hidden" name="producto_id" value="<?php echo (int)$producto['id']; ?>">
-                                        <button
-                                            type="submit"
-                                            class="inline-flex items-center gap-2 rounded-full bg-bbstrong text-white px-5 py-2.5 font-semibold shadow-soft hover:opacity-90 transition whitespace-nowrap">
-                                            <span><?php echo $enCarritoProducto > 0 ? 'Regalar otro' : 'Regalar'; ?></span>
-                                        </button>
-                                    </form>
+                                    <button
+                                        type="button"
+                                        class="inline-flex items-center gap-2 rounded-full bg-bbstrong text-white px-5 py-2.5 font-semibold shadow-soft hover:opacity-90 transition whitespace-nowrap js-open-gift-modal"
+                                        data-producto-id="<?php echo (int)$producto['id']; ?>"
+                                        data-producto-nombre="<?php echo h($producto['nombre']); ?>"
+                                        data-producto-precio="<?php echo number_format((float)$producto['precio'], 2); ?>"
+                                        data-producto-enlace="<?php echo h($producto['enlace'] ?? ''); ?>">
+                                        <span><?php echo $enCarritoProducto > 0 ? 'Regalar otro' : 'Regalar'; ?></span>
+                                    </button>
                                 <?php endif; ?>
                             </div>
                         </div>
@@ -463,6 +456,81 @@ $resumen = carritoResumen($productos);
                 <?php endforeach; ?>
             </div>
         </section>
+
+        <!-- MODAL REGALO -->
+        <div id="giftModal" class="fixed inset-0 z-[999] hidden">
+            <div id="giftModalBackdrop" class="absolute inset-0 bg-slate-900/50 backdrop-blur-sm"></div>
+
+            <div class="relative min-h-screen flex items-center justify-center p-4">
+                <div class="w-full max-w-lg rounded-[32px] bg-white shadow-[0_30px_80px_rgba(122,97,112,.28)] border border-white overflow-hidden">
+                    <div class="px-6 py-5 bg-gradient-to-r from-bbpink/40 via-white to-bbblue/40 border-b border-white/70">
+                        <div class="flex items-start justify-between gap-4">
+                            <div>
+                                <div class="text-xs uppercase tracking-[.18em] text-bbstrong/70 font-bold">
+                                    Elegir opción
+                                </div>
+                                <h3 class="mt-1 text-2xl font-black text-bbstrong">
+                                    ¿Qué deseas hacer?
+                                </h3>
+                                <p class="mt-2 text-sm text-bbtext/80">
+                                    Selecciona si deseas donar este regalo o verlo directamente en la tienda.
+                                </p>
+                            </div>
+
+                            <button
+                                type="button"
+                                id="giftModalClose"
+                                class="w-11 h-11 rounded-full bg-white border border-bbpink/30 text-bbstrong text-xl font-bold shadow-soft hover:bg-bbpink/10 transition">
+                                ×
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="px-6 py-6">
+                        <div class="rounded-[24px] bg-bbcream border border-bbpink/20 p-4 mb-5">
+                            <div class="text-xs uppercase tracking-[.14em] text-bbstrong/60 font-bold">
+                                Producto seleccionado
+                            </div>
+                            <div id="giftModalProductName" class="mt-2 text-lg font-black text-bbstrong">
+                                Producto
+                            </div>
+                            <div id="giftModalProductPrice" class="mt-1 text-sm text-bbtext/75">
+                                S/ 0.00
+                            </div>
+                        </div>
+
+                        <div class="grid sm:grid-cols-2 gap-4">
+                            <form method="POST" class="m-0">
+                                <input type="hidden" name="accion" value="agregar">
+                                <input type="hidden" name="producto_id" id="giftModalProductoId" value="">
+                                <button
+                                    type="submit"
+                                    class="w-full rounded-[26px] bg-bbstrong text-white p-5 text-left shadow-soft hover:opacity-90 transition">
+                                    <div class="text-sm font-semibold opacity-90">Opción 1</div>
+                                    <div class="mt-1 text-lg font-black">Donar este regalo</div>
+                                    <div class="mt-2 text-sm text-white/80">
+                                        Se agregará al carrito y continuarás al checkout.
+                                    </div>
+                                </button>
+                            </form>
+
+                            <a
+                                href="#"
+                                id="giftModalStoreLink"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                class="block w-full rounded-[26px] bg-white border border-bbpink/30 p-5 text-left shadow-soft hover:bg-bbpink/10 transition">
+                                <div class="text-sm font-semibold text-bbstrong/80">Opción 2</div>
+                                <div class="mt-1 text-lg font-black text-bbstrong">Ver en tienda</div>
+                                <div class="mt-2 text-sm text-bbtext/75">
+                                    Se abrirá la tienda del producto en una nueva pestaña.
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -509,6 +577,58 @@ $resumen = carritoResumen($productos);
                 if (e.key === 'Escape') closeCart();
             });
         });
+        
+        const giftModal = document.getElementById('giftModal');
+const giftModalBackdrop = document.getElementById('giftModalBackdrop');
+const giftModalClose = document.getElementById('giftModalClose');
+const giftModalProductoId = document.getElementById('giftModalProductoId');
+const giftModalProductName = document.getElementById('giftModalProductName');
+const giftModalProductPrice = document.getElementById('giftModalProductPrice');
+const giftModalStoreLink = document.getElementById('giftModalStoreLink');
+
+function openGiftModal(data) {
+    if (!giftModal) return;
+
+    giftModalProductoId.value = data.id || '';
+    giftModalProductName.textContent = data.nombre || 'Producto';
+    giftModalProductPrice.textContent = 'S/ ' + (data.precio || '0.00');
+    giftModalStoreLink.href = data.enlace || '#';
+
+    giftModal.classList.remove('hidden');
+    document.body.classList.add('overflow-hidden');
+}
+
+function closeGiftModal() {
+    if (!giftModal) return;
+
+    giftModal.classList.add('hidden');
+    document.body.classList.remove('overflow-hidden');
+}
+
+document.querySelectorAll('.js-open-gift-modal').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+        openGiftModal({
+            id: this.dataset.productoId,
+            nombre: this.dataset.productoNombre,
+            precio: this.dataset.productoPrecio,
+            enlace: this.dataset.productoEnlace
+        });
+    });
+});
+
+if (giftModalBackdrop) {
+    giftModalBackdrop.addEventListener('click', closeGiftModal);
+}
+
+if (giftModalClose) {
+    giftModalClose.addEventListener('click', closeGiftModal);
+}
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeGiftModal();
+    }
+});
     </script>
 </body>
 
