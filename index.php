@@ -425,6 +425,13 @@ $resumen = carritoResumen($productos);
                             </p>
 
                             <div class="mt-auto pt-5 flex items-center justify-between gap-3">
+                            <div class="text-sm text-bbtext/70">
+                                    <?php if ($enCarritoProducto > 0): ?>
+                                        Ya agregaste <strong><?php echo $enCarritoProducto; ?></strong>
+                                    <?php else: ?>
+                                        Listo para regalar
+                                    <?php endif; ?>
+                                </div>
                                 <div class="text-sm text-bbtext/70">
                                     <?php if ($enCarritoProducto > 0): ?>
                                         Ya agregaste <strong><?php echo $enCarritoProducto; ?></strong>

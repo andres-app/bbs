@@ -28,35 +28,37 @@ $productos = [
         'precio' => 329.00,
         'imagen' => 'https://infanti.com.pe/cdn/shop/files/01451435507_1.jpg?v=1694572416&width=1220',
         'descripcion' => '¡En 3 minutos caliente de forma delicada la leche o la comida de tu bebé!',
-        'categoria' => 'Descanso',
+        'categoria' => 'Accesorios de lactancia',
         'stock' => 1
     ],
     4 => [
         'id' => 4,
-        'nombre' => 'Kit de Biberones',
-        'precio' => 99.90,
-        'imagen' => 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=900&q=80',
-        'descripcion' => 'Set práctico para la alimentación diaria del bebé.',
-        'categoria' => 'Alimentación',
-        'stock' => 2
+        'nombre' => 'Chupón Ultra Air 0-6 x2 Niña',
+        'precio' => 65.00,
+        'imagen' => 'https://infanti.com.pe/cdn/shop/files/01451408559-1.webp?v=1771280195&width=1220',
+        'descripcion' => 'Deja que la piel de tu pequeño respire',
+        'categoria' => 'Chupones',
+        'stock' => 1
     ],
     5 => [
         'id' => 5,
-        'nombre' => 'Cuna Moisés Decorativa',
-        'precio' => 259.90,
-        'imagen' => 'https://images.unsplash.com/photo-1516627145497-ae6968895b74?auto=format&fit=crop&w=900&q=80',
-        'descripcion' => 'Hermosa opción decorativa y funcional para el descanso.',
-        'categoria' => 'Descanso',
+        'nombre' => 'AIMAMA – MOCHILA PAÑALERA – GRIS',
+        'precio' => 180.00,
+        'imagen' => 'https://babyology.com.pe/wp-content/uploads/2021/01/mochila-jpg.webp',
+        'descripcion' => 'deal para llevar las cosas del bebé a todas partes de una manera super cómoda.
+        Hecha de Poliéster Impermeable. Interior: Impermeable.  Tiene múltiples bolsillos.
+        Compartimiento térmico para 3 biberones independientes.  Compartimento para prendas húmedas.  Compartimentos especial para tener a la mano los pañitos húmedos.  Bolsillo trasero que permite fácil acceso al  fondo de la mochila sin sacar nada.',
+        'categoria' => 'Pañaleros',
         'stock' => 1
     ],
     6 => [
         'id' => 6,
-        'nombre' => 'Pack de Toallitas y Aseo',
-        'precio' => 59.90,
-        'imagen' => 'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=900&q=80',
-        'descripcion' => 'Todo lo necesario para el cuidado diario del bebé.',
+        'nombre' => 'Cambiador Portátil Rosado Cometa - Mat',
+        'precio' => 79.90,
+        'imagen' => 'https://infanti.com.pe/cdn/shop/files/43A0MAT24CO-1.jpg?v=1758570083&width=1220',
+        'descripcion' => 'El Cambiador Portátil Maternelle es el accesorio infaltable en las salidas con tu bebé. Brinda comodidad y practicidad al momento del cambio del pañal debido a que se adapta a diferentes situaciones.',
         'categoria' => 'Higiene',
-        'stock' => 4
+        'stock' => 1
     ],
 ];
 
