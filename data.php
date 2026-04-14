@@ -66,6 +66,16 @@ $productos = [
         'enlace' => 'https://infanti.com.pe/collections/bolsos-panalero-1/products/cambiador-portatil-rosado-cometa-mat',
         'stock' => 1
     ],
+    7 => [
+        'id' => 7,
+        'nombre' => 'Pack x2 Sabanas Colecho',
+        'precio' => 119.90,
+        'imagen' => 'https://infanti.com.pe/cdn/shop/files/43A00003008-2.jpg?v=1751402200&width=610',
+        'descripcion' => 'Pack de 2 sábanas Bajeras amoldables al colchón Monchitos Accesorios',
+        'categoria' => 'Ropa de cuna',
+        'enlace' => 'https://infanti.com.pe/collections/ropa-de-cunas/products/pack-x2-sabanas-colecho-monchito',
+        'stock' => 1
+    ],
 ];
 
 if (!isset($_SESSION['carrito'])) {
